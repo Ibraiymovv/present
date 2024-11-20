@@ -1,0 +1,107 @@
+#include <iostream>
+#include <vector>
+
+using namespace std;
+
+// Игровое поле (3x3)
+vector<vector<char>> board(3, vector<char>(3, ' '));
+
+// Функция для отображения игрового поля
+void displayBoard() {
+    cout << "  0   1   2" << endl;
+    for (int i = 0; i < 3; i++) {
+        cout << i << " ";
+        for (int j = 0; j < 3; j++) {
+            cout << board[i][j];
+            if (j < 2) cout << " | ";
+        }
+        cout << endl;
+        if (i < 2) cout << " ---|---|---" << endl;
+    }
+    cout << endl;
+}
+
+// Функция для проверки победителя
+bool checkWinner(char player) {
+    // Проверка строк
+    for (int i = 0; i < 3; i++) {
+        if (board[i][0] == player && board[i][1] == player && board[i][2] == player)
+            return true;
+    }
+    // Проверка столбцов
+    for (int i = 0; i < 3; i++) {
+        if (board[0][i] == player && board[1][i] == player && board[2][i] == player)
+            return true;
+    }
+    // Проверка диагоналей
+    if (board[0][0] == player && board[1][1] == player && board[2][2] == player)
+        return true;
+    if (board[0][2] == player && board[1][1] == player && board[2][0] == player)
+        return true;
+
+    return false;
+}
+
+// Функция для проверки на ничью
+bool checkDraw() {
+    for (int i = 0; i < 3; i++) {
+        for (int j = 0; j < 3; j++) {
+            if (board[i][j] == ' ') {
+                return false;
+            }
+        }
+    }
+    return true;
+}
+
+// Функция для обработки хода игрока
+bool makeMove(int player, int row, int col) {
+    if (row < 0 || row >= 3 || col < 0 || col >= 3 || board[row][col] != ' ') {
+        cout << "Неверный ход, попробуйте снова!" << endl;
+        return false;
+    }
+
+    // Делает ход
+    board[row][col] = (player == 1) ? 'X' : 'O';
+    return true;
+}
+
+int main() {
+    int player = 1; // Начинает игрок 1 (X)
+    int row, col;
+    bool gameOver = false;
+
+    while (!gameOver) {
+        displayBoard();
+
+        // Ввод хода
+        cout << "Игрок " << player << " (" << (player == 1 ? 'X' : 'O') << "), введите номер строки и столбца (0-2): ";
+        cin >> row >> col;
+
+        // Выполняем ход
+        if (!makeMove(player, row, col)) {
+            continue; // Повторяем, если ход неверный
+        }
+
+        // Проверка на победителя
+        if (checkWinner(player == 1 ? 'X' : 'O')) {
+            displayBoard();
+            cout << "Игрок " << player << " (" << (player == 1 ? 'X' : 'O') << ") победил!" << endl;
+            gameOver = true;
+            break;
+        }
+
+        // Проверка на ничью
+        if (checkDraw()) {
+            displayBoard();
+            cout << "Ничья!" << endl;
+            gameOver = true;
+            break;
+        }
+
+        // Смена игрока
+        player = (player == 1) ? 2 : 1;
+    }
+
+    return 0;
+}
